@@ -1,8 +1,8 @@
+from fetchers import PlaywrightFetcher
 from parser import TapologyParser
 
+
 parser = TapologyParser()
+fetcher = PlaywrightFetcher()
 
-result = parser.parse("hello world",TapologyParser.ParseType.PARSE_MATCHUPS)
-
-print(result)
-
+#should be able to pair any parser with any fetcher
