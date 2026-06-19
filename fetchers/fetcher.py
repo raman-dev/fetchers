@@ -8,7 +8,7 @@ class Fetcher(ABC):
         pass
 
     @staticmethod
-    def get_result_dict(self, results, format, url):
+    def get_result_dict(results, format, url):
         return {"results":results,"format":format,"url":url}
 
 
