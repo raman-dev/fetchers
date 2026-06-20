@@ -14,5 +14,19 @@ tapology_url = "https://www.tapology.com/fightcenter/events/141144-ufc-fight-nig
 # results = fetcher.fetch(url=test_url)
 # print(results)
 
-results = fetcher.fetch(url=tapology_url)
-rprint(results)
+
+def playwright_fetch_test(input_url):
+    results = fetcher.fetch(url=input_url)
+    #print to file for testing
+    with open("tapology_home.html", "w", encoding="utf-8") as f:
+        f.write(results["results"])
+
+def tapology_parser_test():
+    with open("tapology_home.html","r",encoding="utf-8") as f:
+        source = "\n".join(f.readlines())
+        result = parser.parse(source,TapologyParser.ParseType.PARSE_MATCHUPS)
+
+        rprint(result)
+
+tapology_parser_test()
+# playwright_fetch_test(input_url=tapology_url)
