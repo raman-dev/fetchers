@@ -1,6 +1,5 @@
 from enum import Enum
 from .parser import Parser
-from bs4 import BeautifulSoup
 from pyquery import PyQuery as pq
 import unicodedata
 import re
@@ -27,8 +26,72 @@ class TapologyParser(Parser):
 
         return {"results":[]}
 
+    def scrapeResults(self,source):
+        # d = pq(filename="results_test.html",encoding='utf-8')
+        d = pq(source)
+        ul = d("#sectionFightCard > ul")  # this returns pyquery object
+        matchupResults = []
+        for i, li in enumerate(ul("li")):
+            # li is of type lxml.html.HtmlElement
+            # dataBoutWrapper = pq(li)("div[data-bout-wrapper]").children()[0]
+            dataBoutWrapper = pq(li)("div[data-bout-wrapper]:first")
+
+            children = pq(dataBoutWrapper).children()
+            # rprint(f"num children => {len(children)}")
+            methodDataParent = children[0]
+            resultDataParent = children[1]
+
+            methods = []
+            for span in pq(methodDataParent)("span"):
+                methods.append(pq(span).text())
+            # rprint(f"methods => {methods}")
+            if len(methods) == 0:
+                continue
+            _, method, roundTimes = methods
+
+            fighter_a, _, fighter_b = pq(resultDataParent).children()
+
+            x = self.scrapeFighterNameAndLink(fighter_a, result_only=True)
+            y = self.scrapeFighterNameAndLink(fighter_b, result_only=True)
+
+            result = {"fighters": [x, y]}
+
+            # non decision fromat is M:SS Round x of y
+            # decision is full time
+            method = method.split(",")[0].lower()
+            if "decision" in method:
+                result["method"] = "decision"
+            elif "ko/tko" in method:
+                result["method"] = "ko"
+            elif "submission" in method:
+                result["method"] = "submission"
+            elif "draw" in method:
+                result["method"] = "draw"
+            else:
+                result["method"] = "no contest"
+
+            # print(roundTimes,result['method'],method)
+            if result["method"] == "decision" or result["method"] == "draw":
+                # rounds = 3 or 5
+                # time  = 15:00 or 25:00
+                if "15:00" in roundTimes:
+                    result["final_round"] = "3"
+                else:
+                    result["final_round"] = "5"  # last round of fight
+                result["time"] = "5:00"  # final round time
+            else:
+                # format is Round X of Y
+                # M:SS Round X of Y
+                timeMatch = re.search(r"[0-5]\:[0-5][0-9]", roundTimes)
+                roundMatch = re.search(r"Round [1-5] of [1-5]", roundTimes)
+                result["time"] = timeMatch.group(0)
+                result["final_round"] = re.search(r"[1-5]", roundMatch.group(0)).group(0)
+            # print(result)
+            matchupResults.append(result)
+        return matchupResults
+
     def parse_results(self, source):
-        return "Parsing results from Tapology"
+        return self.scrapeResults(source)
     
     def normalizeString(self, string):
         return (

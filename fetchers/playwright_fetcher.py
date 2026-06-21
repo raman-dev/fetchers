@@ -6,13 +6,11 @@ class PlaywrightFetcher(Fetcher):
     def fetch(self,url) -> dict:
         print(f'playwright.fetching {url}')
 
-        title = None
         html_content = None
         with sync_playwright() as p:
             browser = p.chromium.launch(headless=False)
             page = browser.new_page()
             page.goto(url=url,timeout=self.DEFAULT_TIMEOUT)
-            # title = page.title()
             html_source = page.content()
             browser.close()
 
