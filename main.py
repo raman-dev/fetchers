@@ -30,13 +30,19 @@ def tapology_parser_test():
         result = parser.parse(source,TapologyParser.ParseType.PARSE_MATCHUPS)
 
         rprint(result)
+    #
+    # rprint("PARSING RESULTS--------------")
+    # with open("tapology_home_with_results.html","r",encoding="utf-8") as f:
+    #     source = "\n".join(f.readlines())
+    #     result = parser.parse(source,TapologyParser.ParseType.PARSE_RESULTS)
+    #
+    #     rprint(result)
+    # rprint("PARSING EVENT--------------")
+    # with open("tapology_events.html","r",encoding="utf-8") as f:
+    #     source = "\n".join(f.readlines())
+    #     result = parser.parse(source,TapologyParser.ParseType.PARSE_EVENT_DATA)
+    #
+    #     rprint(result)
 
-    rprint("PARSING RESULTS--------------")
-    with open("tapology_home_with_results.html","r",encoding="utf-8") as f:
-        source = "\n".join(f.readlines())
-        result = parser.parse(source,TapologyParser.ParseType.PARSE_RESULTS)
-
-        rprint(result)
-
+# playwright_fetch_test(input_url=tapology_events_url,filename="tapology_events.html")
 tapology_parser_test()
-# playwright_fetch_test(input_url=tapology_url_with_results,filename="tapology_home_with_results.html")
